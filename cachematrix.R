@@ -1,15 +1,38 @@
-## Put comments here that give an overall description of what your
-## functions do
+## These two functions let you compute the inverse of a given matrix
+## taking care about the "newness" of it: if the matrix is already
+## known, its inverse is loaded from cache where it was previously
+## stored.
 
-## Write a short comment describing this function
+## mCM function takes a matrix and defines a bunch of functions
+## to work with it, returning a list
 
 makeCacheMatrix <- function(x = matrix()) {
-
+  m <- NULL
+  set <- function(y) {
+    x <<- y
+    m <<- NULL
+  }
+  get <- function() x
+  setsolve <- function(solve) m <<- solve
+  getsolve <- function() m
+  list(set = set, get = get,
+       setsolve = setsolve,
+       getsolve = getsolve)
 }
 
-
-## Write a short comment describing this function
+## cS function has to be used after mCM is instantiated, like this:
+## cacheSolve(makeCacheMatrix(x)), and will return the inverse of 
+## matrix x, reading it from cache if already computed
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  ## Return a matrix that is the inverse of 'x'
+  m <- x$getsolve()
+  if(!is.null(m)) {
+    message("getting cached data")
+    return(m)
+  }
+  data <- x$get()
+  m <- solve(data, ...)
+  x$setsolve(m)
+  m
 }
